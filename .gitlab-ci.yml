@@ -1,0 +1,27 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - when: never
+
+stages:
+  - build
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_NAME: "$REGISTRY_DOMAIN/development/infrastructure/postgres-ssh-sidecar/postgres-ssh-sidecar"
+
+
+build_and_push:
+  stage: build
+  image: docker:29.6.0-cli
+  services:
+    - name: docker:29.6.0-dind
+  tags:
+    - shared
+  before_script:
+    - apk add --no-cache ca-certificates
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker build --provenance=false --platform linux/amd64 -t "$IMAGE_NAME:latest" .
+    - docker push $IMAGE_NAME:latest
