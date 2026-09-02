@@ -10,6 +10,7 @@ variables:
   DOCKER_HOST: "tcp://docker:2375"
   DOCKER_TLS_CERTDIR: ""
   IMAGE_NAME: "$REGISTRY_DOMAIN/development/infrastructure/postgres-ssh-sidecar/postgres-ssh-sidecar"
+  PUBLIC_IMAGE_NAME: $DOCKER_HUB_USER/postgres-ssh-sidecar
 
 
 build_and_push:
@@ -25,3 +26,7 @@ build_and_push:
   script:
     - docker build --provenance=false --platform linux/amd64 -t "$IMAGE_NAME:latest" .
     - docker push $IMAGE_NAME:latest
+    # Push to docker hub
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+    - docker tag $IMAGE_NAME:latest $PUBLIC_IMAGE_NAME:latest
+    - docker push $PUBLIC_IMAGE_NAME:latest
