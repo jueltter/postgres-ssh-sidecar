@@ -4,12 +4,16 @@ RUN apt-get update && apt-get install -y openssh-server postgresql-client && \
     mkdir /var/run/sshd && \
     rm -rf /var/lib/apt/lists/*
 
-# Add authorized key or password for SSH access
-RUN useradd -m -s /bin/bash sdlc-bot && \
-    echo 'sdlc-bot:Password1234#' | chpasswd
+# Add user for SSH access
+RUN useradd -m -s /bin/bash postgres-ssh
+
+# Set password for the user using a secret
+RUN --mount=type=secret,id=postgres_ssh_password \
+    POSTGRES_SSH_PASSWORD=$(cat /run/secrets/postgres_ssh_password) \
+    && echo 'postgres-ssh:${POSTGRES_SSH_PASSWORD}' | chpasswd
 
 RUN mkdir /backups \
-    && chown sdlc-bot:sdlc-bot /backups \
+    && chown postgres-ssh:postgres-ssh /backups \
     && chmod 755 /backups
 
 EXPOSE 22
