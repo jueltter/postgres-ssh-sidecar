@@ -1,0 +1,12 @@
+name: postgres-ssh-sidecar
+
+services:
+  postgres-ssh-sidecar:
+    build:
+      context: .
+    container_name: postgres-ssh-sidecar
+    restart: unless-stopped
+    ports:
+      - "2222:22"
+    env_file:
+      - .env

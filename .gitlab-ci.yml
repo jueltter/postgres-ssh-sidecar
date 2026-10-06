@@ -24,8 +24,7 @@ build_and_push:
     - apk add --no-cache ca-certificates
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
-    - export POSTGRES_SSH_PASSWORD="$POSTGRES_SSH_PASSWORD"
-    - docker build --no-cache --provenance=false --platform linux/amd64 --secret id=postgres_ssh_password,env=POSTGRES_SSH_PASSWORD -t "$IMAGE_NAME:latest" .
+    - docker build --no-cache --provenance=false --platform linux/amd64 -t "$IMAGE_NAME:latest" .
     - docker push $IMAGE_NAME:latest
     # Push to docker hub
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
