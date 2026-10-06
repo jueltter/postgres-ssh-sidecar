@@ -18,4 +18,6 @@ mkdir -p /backups
 chown "$POSTGRES_SSH_USER:$POSTGRES_SSH_USER" /backups
 chmod 755 /backups
 
-exec /usr/sbin/sshd -D "$@"
+echo "User $POSTGRES_SSH_USER configured successfully."
+
+exec "$@"

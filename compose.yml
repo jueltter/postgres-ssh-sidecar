@@ -4,6 +4,7 @@ services:
   postgres-ssh-sidecar:
     build:
       context: .
+    image: postgres-ssh-sidecar:local
     container_name: postgres-ssh-sidecar
     restart: unless-stopped
     ports:
