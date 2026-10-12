@@ -1,6 +1,6 @@
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG == "latest"
     - when: never
 
 stages:
@@ -24,9 +24,9 @@ build_and_push:
     - apk add --no-cache ca-certificates
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
-    - docker build --no-cache --provenance=false --platform linux/amd64 -t "$IMAGE_NAME:latest" .
-    - docker push $IMAGE_NAME:latest
+    - docker build --no-cache --provenance=false --platform linux/amd64 -t "$IMAGE_NAME:$CI_COMMIT_TAG" .
+    - docker push $IMAGE_NAME:$CI_COMMIT_TAG
     # Push to docker hub
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
-    - docker tag $IMAGE_NAME:latest $PUBLIC_IMAGE_NAME:latest
-    - docker push $PUBLIC_IMAGE_NAME:latest
+    - docker tag $IMAGE_NAME:$CI_COMMIT_TAG $PUBLIC_IMAGE_NAME:$CI_COMMIT_TAG
+    - docker push $PUBLIC_IMAGE_NAME:$CI_COMMIT_TAG
